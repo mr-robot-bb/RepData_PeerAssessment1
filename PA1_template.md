@@ -7,9 +7,54 @@ Reproducable Research Week 2 - CP1
 
 ```r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(ggplot2)
 library(lubridate)
+```
+
+```
+## 
+## Attaching package: 'lubridate'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     date
+```
+
+```r
 library(gridExtra)
+```
+
+```
+## 
+## Attaching package: 'gridExtra'
+```
+
+```
+## The following object is masked from 'package:dplyr':
+## 
+##     combine
 ```
 
 ## Loading and preprocessing the data
@@ -58,7 +103,7 @@ head(activity.perday)
 qplot(activity.perday$steps, geom="histogram",  main = "Histogram for Total steps per day", xlab = "Steps", ylab = "Days Count", bins = 30) 
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 ### Calculate and report the mean and median of the total number of steps taken per day
 
@@ -97,7 +142,7 @@ activity.perinterval <- mutate(activity.perinterval, time = hms(paste(as.charact
 qplot( as.numeric(time)/300, steps, data = activity.perinterval , geom="line", xlab = 'intervals (5 min intervals)')
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 ```r
 ## qplot(interval, steps, data = activity.perinterval , geom="line")
@@ -168,7 +213,7 @@ activity.imputed.perday <- summarize(days.imputed, steps = sum(steps, na.rm = TR
 qplot(activity.imputed.perday$steps, geom="histogram",  main = "Histogram for Total steps per day", xlab = "Steps", ylab = "Days Count", bins = 30) 
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 Mean total number of steps taken per day
 
@@ -235,7 +280,7 @@ plot2 <- qplot( as.numeric(time)/300, steps, data = activity.weekday.perinterval
 grid.arrange(plot1, plot2, nrow=2, ncol=1)
 ```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 It seems that that activity start earlier on weekdays (prepping for work?) than in the weekend. During the rest of the day there's more activity in the weekend.
 
