@@ -4,7 +4,8 @@ Reproducable Research Week 2 - CP1
 ## Loading libraries 
 (sorry for the output)
 
-```{r}
+
+```r
 library(dplyr)
 library(ggplot2)
 library(lubridate)
@@ -13,59 +14,107 @@ library(gridExtra)
 
 ## Loading and preprocessing the data
 
-```{r}
+
+```r
 activity <- read.csv("./data/activity.csv", stringsAsFactors =FALSE)
 activity$date <- as.Date(as.character((activity$date )), "%Y-%m-%d")
 str(activity)
+```
+
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
 ```
 
 ## What is mean total number of steps taken per day?
 
 ### Calculate the total number of steps taken per day
 
-```{r}
+
+```r
 days <- group_by(activity, date)
 activity.perday <- summarize(days, steps = sum(steps, na.rm = TRUE) )
 head(activity.perday)
 ```
 
+```
+## # A tibble: 6 × 2
+##         date steps
+##       <date> <int>
+## 1 2012-10-01     0
+## 2 2012-10-02   126
+## 3 2012-10-03 11352
+## 4 2012-10-04 12116
+## 5 2012-10-05 13294
+## 6 2012-10-06 15420
+```
+
 ### Make a histogram of the total number of steps taken each day
 
-```{r}
+
+```r
 qplot(activity.perday$steps, geom="histogram",  main = "Histogram for Total steps per day", xlab = "Steps", ylab = "Days Count", bins = 30) 
 ```
+
+![plot of chunk unnamed-chunk-301](figure/unnamed-chunk-301-1.png)
 
 ### Calculate and report the mean and median of the total number of steps taken per day
 
 Mean of total steps taken per day
 
-```{r}
+
+```r
 mean(activity.perday$steps)
+```
+
+```
+## [1] 9354.23
 ```
 
 Median of total steps taken per day
 
-```{r}
+
+```r
 median(activity.perday$steps)
+```
+
+```
+## [1] 10395
 ```
 
 ## What is the average daily activity pattern?
 
 Time series plot of the 5 minunte interval and average number of steps taken, averaged across all days:
 
-```{r}
+
+```r
 intervals <- group_by(activity, interval)
 activity.perinterval <- summarize(intervals, steps = mean(steps, na.rm = TRUE) )
 ##ggplot(activity.perinterval, aes(interval, steps)) + geom_line() + xlab("interval (time)") + ylab("average steps")
 activity.perinterval <- mutate(activity.perinterval, time = hms(paste(as.character(interval %/% 100), as.character(interval %% 100), "00" , sep=":")))
 qplot( as.numeric(time)/300, steps, data = activity.perinterval , geom="line", xlab = 'intervals (5 min intervals)')
+```
+
+![plot of chunk unnamed-chunk-304](figure/unnamed-chunk-304-1.png)
+
+```r
 ## qplot(interval, steps, data = activity.perinterval , geom="line")
 ```
 
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r}
+
+```r
 arrange(activity.perinterval, desc(steps))[1,1:2]
+```
+
+```
+## # A tibble: 1 × 2
+##   interval    steps
+##      <int>    <dbl>
+## 1      835 206.1698
 ```
 
 We see that interval 835 has the most steps on average across all days
@@ -74,13 +123,19 @@ We see that interval 835 has the most steps on average across all days
 
 How many missing days/intervals are missing (coded as NA) values?
 
-```{r}
+
+```r
 sum(is.na(activity$steps))
+```
+
+```
+## [1] 2304
 ```
 
 We will fill the missing values by taking the mean of that interval:
 
-```{r}
+
+```r
 activity.imputed <- activity
 
 activity.imputed <- merge(activity.imputed, activity.perinterval, by = "interval")
@@ -94,24 +149,47 @@ activity.imputed <- arrange(activity.imputed,date)
 head(activity.imputed)
 ```
 
+```
+##   interval steps       date
+## 1        0     1 2012-10-01
+## 2        5     0 2012-10-01
+## 3       10     0 2012-10-01
+## 4       15     0 2012-10-01
+## 5       20     0 2012-10-01
+## 6       25     2 2012-10-01
+```
+
 A histrogram of the total number of steps taken each day
 
-```{r}
+
+```r
 days.imputed <- group_by(activity.imputed, date)
 activity.imputed.perday <- summarize(days.imputed, steps = sum(steps, na.rm = TRUE) )
 qplot(activity.imputed.perday$steps, geom="histogram",  main = "Histogram for Total steps per day", xlab = "Steps", ylab = "Days Count", bins = 30) 
 ```
 
+![plot of chunk unnamed-chunk-308](figure/unnamed-chunk-308-1.png)
+
 Mean total number of steps taken per day
 
-```{r}
+
+```r
 mean(activity.imputed.perday$steps)
+```
+
+```
+## [1] 10749.77
 ```
 
 Median total number of steps taken per day
 
-```{r}
+
+```r
 median(activity.imputed.perday$steps)
+```
+
+```
+## [1] 10641
 ```
 
 We see that imputing missing data slightly increased the estimates of total number of steps taken.
@@ -120,16 +198,28 @@ We see that imputing missing data slightly increased the estimates of total numb
 
 We will create a factor variable 'day.type' in the dataset indicating if it's a weekday or weekend
 
-```{r}
+
+```r
 activity.imputed = mutate(activity.imputed, day.name = weekdays(activity.imputed$date), day.type = as.factor(ifelse(day.name %in% c("zaterdag", "zondag"), "weekend", "weekday")))
 name <- "day.name"
 activity.imputed <- activity.imputed %>% select(-one_of(name))
 head(activity.imputed)
 ```
 
+```
+##   interval steps       date day.type
+## 1        0     1 2012-10-01  weekday
+## 2        5     0 2012-10-01  weekday
+## 3       10     0 2012-10-01  weekday
+## 4       15     0 2012-10-01  weekday
+## 5       20     0 2012-10-01  weekday
+## 6       25     2 2012-10-01  weekday
+```
+
 Now we will make a plot comparing activity between weedays and weekend
 
-```{r}
+
+```r
 activity.weekend <- subset(activity.imputed, ! day.type %in% c("weekday"))
 intervals.weekend <- group_by(activity.weekend, interval)
 activity.weekend.perinterval <- summarize(intervals.weekend, steps = mean(steps, na.rm = TRUE) )
@@ -145,8 +235,8 @@ plot2 <- qplot( as.numeric(time)/300, steps, data = activity.weekday.perinterval
 grid.arrange(plot1, plot2, nrow=2, ncol=1)
 ```
 
+![plot of chunk unnamed-chunk-312](figure/unnamed-chunk-312-1.png)
+
 It seems that that activity start earlier on weekdays (prepping for work?) than in the weekend. During the rest of the day there's more activity in the weekend.
 
-```{R}
 
-```
