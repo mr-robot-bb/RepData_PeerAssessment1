@@ -13,7 +13,7 @@ library(gridExtra)
 
 ## Loading and preprocessing the data
 
-```{r}
+```{r echo=TRUE}
 activity <- read.csv("./data/activity.csv", stringsAsFactors =FALSE)
 activity$date <- as.Date(as.character((activity$date )), "%Y-%m-%d")
 str(activity)
@@ -23,7 +23,7 @@ str(activity)
 
 ### Calculate the total number of steps taken per day
 
-```{r}
+```{r echo=TRUE}
 days <- group_by(activity, date)
 activity.perday <- summarize(days, steps = sum(steps, na.rm = TRUE) )
 head(activity.perday)
@@ -31,7 +31,7 @@ head(activity.perday)
 
 ### Make a histogram of the total number of steps taken each day
 
-```{r}
+```{r echo=TRUE}
 qplot(activity.perday$steps, geom="histogram",  main = "Histogram for Total steps per day", xlab = "Steps", ylab = "Days Count", bins = 30) 
 ```
 
@@ -39,13 +39,13 @@ qplot(activity.perday$steps, geom="histogram",  main = "Histogram for Total step
 
 Mean of total steps taken per day
 
-```{r}
+```{r echo=TRUE}
 mean(activity.perday$steps)
 ```
 
 Median of total steps taken per day
 
-```{r}
+```{r echo=TRUE}
 median(activity.perday$steps)
 ```
 
@@ -53,7 +53,7 @@ median(activity.perday$steps)
 
 Time series plot of the 5 minunte interval and average number of steps taken, averaged across all days:
 
-```{r}
+```{r echo=TRUE}
 intervals <- group_by(activity, interval)
 activity.perinterval <- summarize(intervals, steps = mean(steps, na.rm = TRUE) )
 ##ggplot(activity.perinterval, aes(interval, steps)) + geom_line() + xlab("interval (time)") + ylab("average steps")
@@ -64,7 +64,7 @@ qplot( as.numeric(time)/300, steps, data = activity.perinterval , geom="line", x
 
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r}
+```{r echo=TRUE}
 arrange(activity.perinterval, desc(steps))[1,1:2]
 ```
 
@@ -74,13 +74,13 @@ We see that interval 835 has the most steps on average across all days
 
 How many missing days/intervals are missing (coded as NA) values?
 
-```{r}
+```{r echo=TRUE}
 sum(is.na(activity$steps))
 ```
 
 We will fill the missing values by taking the mean of that interval:
 
-```{r}
+```{r echo=TRUE}
 activity.imputed <- activity
 
 activity.imputed <- merge(activity.imputed, activity.perinterval, by = "interval")
@@ -96,7 +96,7 @@ head(activity.imputed)
 
 A histrogram of the total number of steps taken each day
 
-```{r}
+```{r echo=TRUE}
 days.imputed <- group_by(activity.imputed, date)
 activity.imputed.perday <- summarize(days.imputed, steps = sum(steps, na.rm = TRUE) )
 qplot(activity.imputed.perday$steps, geom="histogram",  main = "Histogram for Total steps per day", xlab = "Steps", ylab = "Days Count", bins = 30) 
@@ -104,13 +104,13 @@ qplot(activity.imputed.perday$steps, geom="histogram",  main = "Histogram for To
 
 Mean total number of steps taken per day
 
-```{r}
+```{r echo=TRUE}
 mean(activity.imputed.perday$steps)
 ```
 
 Median total number of steps taken per day
 
-```{r}
+```{r echo=TRUE}
 median(activity.imputed.perday$steps)
 ```
 
@@ -120,7 +120,7 @@ We see that imputing missing data slightly increased the estimates of total numb
 
 We will create a factor variable 'day.type' in the dataset indicating if it's a weekday or weekend
 
-```{r}
+```{r echo=TRUE}
 activity.imputed = mutate(activity.imputed, day.name = weekdays(activity.imputed$date), day.type = as.factor(ifelse(day.name %in% c("zaterdag", "zondag"), "weekend", "weekday")))
 name <- "day.name"
 activity.imputed <- activity.imputed %>% select(-one_of(name))
@@ -129,7 +129,7 @@ head(activity.imputed)
 
 Now we will make a plot comparing activity between weedays and weekend
 
-```{r}
+```{r echo=TRUE}
 activity.weekend <- subset(activity.imputed, ! day.type %in% c("weekday"))
 intervals.weekend <- group_by(activity.weekend, interval)
 activity.weekend.perinterval <- summarize(intervals.weekend, steps = mean(steps, na.rm = TRUE) )
@@ -147,6 +147,3 @@ grid.arrange(plot1, plot2, nrow=2, ncol=1)
 
 It seems that that activity start earlier on weekdays (prepping for work?) than in the weekend. During the rest of the day there's more activity in the weekend.
 
-```{R}
-
-```
